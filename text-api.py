@@ -13,7 +13,26 @@ fktime = "global"
 
 mimetype = ""
 
-dict = {'301-093_1016_c' : "Routine controls and oversight records", '306-112_1023_c' : "Nonfinal rulemakings and state standards records"}
+dict = {'104-008-02_1035_d' : "Short-term environmental program and project records",
+        '108-025_1036_a' : "Historically significant site-specific records (See Guidance for explanation.)",
+        '108-025-01-01_1044_d' : "Short-term compliance and enforcement records",
+        '108-025-08_1044_b' : "Long-term compliance and enforcement records",
+        '108-028_1036_c' : "Long-term site-specific records",
+        '204-079_1047_c' : "Routine permits",
+        '205_1003_a' : "Waste water construction and state revolving fund grants",
+        '205_1003_b' : "Other grants and program support agreements",
+        '301-093_1016_c' : "Routine controls and oversight records",
+        '301-093_1051_b' : "Routine senior officials records",
+        '302-095_1008_c' : "Other security records",
+        '304-104-02_1021_a' : "Historically significant planning and resource allocation records",
+        '304-104-06_1035_c' : "Routine environmental program and project records",
+        '305-109-02-04_1022_a' : "Historically significant public affairs records",
+        '305-109-02-04_1051_a' : "Historically significant records of senior officials",
+        '306-112_1023_c' : "Nonfinal rulemakings and state standards records",
+        '317-261_1025_b' : "Other legal services records",
+        '401_1006_b' : "Other administrative management records",
+        '401-122_1010_a' : "Travel records",
+        'Encrypted' : None}
 
 def tika(files):
     global sttime
