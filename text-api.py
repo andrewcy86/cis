@@ -24,6 +24,20 @@ def tika(files):
     fttime = time.time()
     return r
 
+#must provide filename as a hint using 'content-disposition' : 'attachment; filename = fullfilename'
+def detect(files, filename):
+    url = 'https://ecms-cis-tika.edap-cluster.com/detect/stream'
+    getname = 'attachment; filename=' + filename
+    headers = {
+    'Accept': "*/*",
+    'Cache-Control': "no-cache",
+    'Connection': "keep-alive",
+    'cache-control': "no-cache",
+    'Content-Disposition': getname,
+    }
+    r = requests.put(url, files=files, headers = headers)
+    return r 
+
 def xtika(files):
     global sotime
     global fotime
@@ -73,20 +87,33 @@ if __name__ == "__main__":
     root = Tk()
     #root.dirname = filedialog.askdirectory(parent=root,initialdir="/",title='Please select a directory to scan')
     root.filename = filedialog.askopenfilename(parent=root,initialdir="/",title='Please select a file to scan')
-
+    
+    #get filenam from path
+    import ntpath
+    def getname(path):
+        head, tail = ntpath.split(path)
+        return tail or ntpath.basename(head)
+    
+    
     fin = open(root.filename, 'rb')
-   
+    name = getname(root.filename)
+    
     files = {'files':fin}
 
     print ('Parsing File: '+root.filename)
 
-    mimetype = mimetypes.MimeTypes().guess_type(root.filename)[0]
+    #mimetype = mimetypes.MimeTypes().guess_type(root.filename)[0]
     #print (mimetype)
+    
+    mimetype = detect(files,name)
+    
     r = tika(files)
     #print (r.content)
     #print(r.status_code) API STATUS
+    
+    
     #Determine if PDF needs OCRing
-    if len(r.text.strip())==0 and (mimetype == 'application/pdf'):
+    if len(r.text.strip())==0 and ('pdf' in mimetype):
         fin.seek(0) # Move to the beginning of document
         r = xtika(files)
         print("--- Text Extraction with OCR Took {} seconds ---".format(abs(round(sttime - fttime,2))))
