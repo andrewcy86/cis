@@ -45,19 +45,20 @@ def nlpbuddy(text):
     fnltime = time.time()
     return r
 
-def klassify(text):
+def classify(text):
     global sktime
     global fktime
-    url = 'https://ecms-cis-klassify.edap-cluster.com/classify'
-    data = {"text": text}
+    url = 'https://ecms-cis-deepdetect-prod.edap-cluster.com/api/deepdetect/predict'
+    data = {"service": "records","parameters": {"input": {},"output": {"confidence_threshold": 0.7},"mllib": {"gpu": "false"}}, "data": [text]}
+    headers2 = {'Authorization': 'Basic YWRtaW46bWZicHN6ZmJwdHNoZ2tqcQ==','Content-Type': 'text/plain','Accept': '*/*','Cache-Control': 'no-cache','Host': 'ecms-cis-deepdetect-prod.edap-cluster.com','Accept-Encoding': 'gzip, deflate','Connection': 'keep-alive','cache-control': 'no-cache'}
     sktime = time.time()
-    r = requests.post(url, json=data)
+    r = requests.post(url, json=data, headers = headers2)
     fktime = time.time()
     return r
 
 def getLabel(label):
-    x = label[label.index('_')+1:label.index('_')+5]
-    y = x.replace('_','')
+    x = label[label.index('-')+1:label.index('-')+5]
+    y = x.replace('-','')
     url = 'https://developer.epa.gov/api/index.php/records/api_records?filter=Record_Schedule_Number,cs,' + y
     r = requests.get(url)
     q = r.json()
@@ -102,17 +103,24 @@ if __name__ == "__main__":
     print("--- Text Summarization Took {} seconds ---".format(abs(round(snltime - fnltime,2))))
    
     a = t.json()    
-    b = klassify(a['summary'])
+    b = classify(a['summary'])
     c = b.json()
-    print("--- ML Text Classification Took {} seconds ---".format(abs(round(sktime - fktime,2))))
-    print("Suggested Records Schedule: " + str(c['label']) + " - " + getLabel(str(c['label'])))
+    z = str(c['body']['predictions'][0]['classes'][0]['cat'])
+    prob = c['body']['predictions'][0]['classes'][0]['prob']
     
+    if len(z) == 0:
+        print("No Prediction Available")
+
+    else:
+        print("--- ML Text Classification Took {} seconds ---".format(abs(round(sktime - fktime,2))))
+        print("Suggested Records Schedule: " + str(c['body']['predictions'][0]['classes'][0]['cat']) + " - " + getLabel(str(c['body']['predictions'][0]['classes'][0]['cat'])))
+        print("Probability: " + format(abs(round(prob*100,1))) + "%") 
     #Display top 3 categories
-    from collections import Counter
-    d = Counter(c['scores'])
-    print('Recommended Top 3 Record Schedules')
-    for k,v in d.most_common(3):
-        print('{} - {}: Score {}'.format(k,getLabel(k),v))
+    #from collections import Counter
+    #d = Counter(c['scores'])
+    #print('Recommended Top 3 Record Schedules')
+    #for k,v in d.most_common(3):
+        #print('{} - {}: Score {}'.format(k,getLabel(k),v))
     
     size = fin.seek(0,2)
     fin.close()
@@ -122,7 +130,7 @@ if __name__ == "__main__":
     
     #print summary
     print("Here's the summary: ")
-    print(a['summary'][:400])
+    print(a['summary'][:5000])
 
     #print keywords
     print("Here are some keywords: ")
