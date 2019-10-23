@@ -105,13 +105,12 @@ if __name__ == "__main__":
     a = t.json()    
     b = classify(a['summary'])
     c = b.json()
-    z = str(c['body']['predictions'][0]['classes'][0]['cat'])
-    prob = c['body']['predictions'][0]['classes'][0]['prob']
-    
     if len(z) == 0:
         print("No Prediction Available")
 
     else:
+        z = str(c['body']['predictions'][0]['classes'][0]['cat'])
+        prob = c['body']['predictions'][0]['classes'][0]['prob']
         print("--- ML Text Classification Took {} seconds ---".format(abs(round(sktime - fktime,2))))
         print("Suggested Records Schedule: " + str(c['body']['predictions'][0]['classes'][0]['cat']) + " - " + getLabel(str(c['body']['predictions'][0]['classes'][0]['cat'])))
         print("Probability: " + format(abs(round(prob*100,1))) + "%") 
