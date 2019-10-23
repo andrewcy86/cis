@@ -105,7 +105,10 @@ if __name__ == "__main__":
     a = t.json()    
     b = classify(a['summary'])
     c = b.json()
-    if len(z) == 0:
+    checkcat = str(c['body']['predictions'][0]['classes'])
+    #print(checkcat)
+    
+    if checkcat == '[]':
         print("No Prediction Available")
 
     else:
